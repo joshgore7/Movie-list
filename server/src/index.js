@@ -13,11 +13,39 @@ if (!PORT) {
 }
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); 
 
-app.get("/", (req, res) => {
-	res.send("Hello World!");
+app.get('/movies', async (req, res) => {
+	try {
+	  const result = await knex('movies').select('*');
+	  res.json(result);  
+	} catch (error) {
+	  res.status(500).json({ error: 'Failed to fetch movies' });
+	}
 });
+
+app.post('/movies', async (req, res) => {
+	try {
+		const { title } = req.body;
+		await knex('movies').insert({ title });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Failed to add movie' });
+	}
+});
+
+app.delete('/movies/:id', async (req, res) => {
+	try {
+		const { id } = req.params;
+		await knex('movies').where({ id }).del();
+		res.status(200).json({ message: 'Movie deleted successfully' });
+	} catch (error) {
+		res.status(500).json({ error: 'Failed to delete movie' });
+	}
+});
+
+
+
 
 const server = app.listen(PORT, () => {
 	console.log(`App listening at http://localhost:${PORT}`);

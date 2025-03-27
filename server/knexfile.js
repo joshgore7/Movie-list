@@ -21,13 +21,13 @@ const HOST = fs.existsSync("/.dockerenv") == true ? "db" : "127.0.0.1";
 
 module.exports = {
 	development: {
-		client: "postgresql",
-		connection: {
-			host: HOST,
-			password: USER_PASSWORD,
-			user: USER_NAME,
-			port: DATABASE_PORT,
-			database: DATABASE_NAME,
-		},
+	  client: "postgresql",
+	  connection: process.env.DATABASE_URL ? process.env.DATABASE_URL : {
+		host: process.env.HOST || 'localhost',
+		user: process.env.USER_NAME,
+		password: process.env.USER_PASSWORD,
+		port: process.env.DATABASE_PORT || 5432,
+		database: process.env.DATABASE_NAME,
+	  },
 	},
-};
+  };
